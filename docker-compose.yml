@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    env_file:
+      - .env
+    container_name: ${CONTAINER_NAME_PREFIX}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+
+    command: air ./code/main.go -b 0.0.0.0
+  db:
+    image: mysql:${MYSQL_VERSION}
+    container_name: ${CONTAINER_NAME_PREFIX}db
+    restart: unless-stopped
+    ports:
+      - ${HOST_DB_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_USER_PASSWORD: ${MYSQL_USER_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - go-db:/var/lib/mysql/
+volumes:
+  go-db:
